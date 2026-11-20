@@ -95,7 +95,11 @@ const getMyCart = async (req, res) => {
       userId: req.user.userId,
     }).populate({
       path: "items.productId",
-      select: "name price stock status",
+      select: "name price stock status image category storeId",
+      populate: {
+    path: "storeId",
+    select: "storeName",
+  },
     });
 
     if (!cart) {

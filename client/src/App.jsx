@@ -14,6 +14,18 @@ import MySellerApplication from "./pages/MySellerApplication";
 import SellerDashboard from "./pages/SellerDashboard";
 import SellerOrders from "./pages/SellerOrders";
 import SellerProducts from "./pages/SellerProducts";
+import Cart from "./pages/Cart";
+import Checkout from "./pages/Checkout";
+import MyOrders from "./pages/MyOrders";
+import OrderDetails from "./pages/OrderDetails";
+import SellerReturnRequests from "./pages/SellerReturnRequests";
+import AdminDashboard from "./pages/AdminDashboard";
+import AdminSellerApplications from "./pages/AdminSellerApplications";
+import AdminUsers from "./pages/AdminUsers";
+import AdminProducts from "./pages/AdminProducts";
+import AdminOrders from "./pages/AdminOrders";
+import AdminReturns from "./pages/AdminReturns";
+import ProductDetails from "./pages/ProductDetails";
 function App() {
   return (
     <BrowserRouter>
@@ -25,6 +37,10 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<Products />} />
+              <Route
+  path="/products/:id"
+  element={<ProductDetails />}
+/>
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="*" element={<NotFound />} />
@@ -39,12 +55,43 @@ function App() {
                     path="/seller/dashboard"
                     element={<SellerDashboard />}
                   />
+                  <Route
+                    path="/seller/return-requests"
+                    element={<SellerReturnRequests />}
+                  />
                 </Route>
                 <Route path="/seller/orders" element={<SellerOrders />} />
-                 <Route path="/seller/products" element={<SellerProducts />} />
+                <Route path="/seller/products" element={<SellerProducts />} />
+              </Route>
+              <Route element={<ProtectedRoute allowedRoles={["buyer"]} />}>
+                <Route path="/cart" element={<Cart />} />
+                <Route path="/checkout" element={<Checkout />} />
+                <Route path="/my-orders" element={<MyOrders />} />
+                <Route path="/my-orders/:orderId" element={<OrderDetails />} />
               </Route>
 
               <Route path="/become-seller" element={<BecomeSeller />} />
+              {/* Admin Routes */}
+<Route element={<ProtectedRoute allowedRoles={["admin"]} />}>
+  <Route
+    path="/admin"
+    element={<AdminDashboard />}
+  />
+  <Route
+  path="/admin/seller-applications"
+  element={<AdminSellerApplications />}
+/>
+<Route
+  path="/admin/users"
+  element={<AdminUsers />}
+/>
+<Route
+  path="/admin/products"
+  element={<AdminProducts />}
+/>
+<Route path="/admin/orders" element={<AdminOrders />} />
+<Route path="/admin/returns" element={<AdminReturns />} />
+</Route>
             </Routes>
           </div>
 

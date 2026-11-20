@@ -48,8 +48,21 @@ stock: {
       type: String,
       required: [true, "Product category is required"],
       trim: true,
+       lowercase: true,
       maxlength: [60, "Category cannot exceed 60 characters"],
     },
+
+
+image: {
+  type: String,
+  default: "",
+},
+
+imagePublicId: {
+  type: String,
+  default: "",
+},
+
 
     status: {
       type: String,

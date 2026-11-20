@@ -9,7 +9,7 @@ const { protect } = require("../middleware/authMiddleware");
 const rateLimit = require("express-rate-limit");
 
 const loginLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
+  windowMs: 10* 1000,
   limit: 5,
   message: {
     success: false,

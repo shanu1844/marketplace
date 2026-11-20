@@ -1,6 +1,9 @@
 
 const SellerApplication = require("../models/SellerApplication");
 const User = require("../models/User");
+const Store = require("../models/Store");
+
+// Submit seller application
 const submitSellerApplication = async (req, res) => {
   try {
     const { storeName, description, phone } = req.body;
@@ -20,7 +23,10 @@ const submitSellerApplication = async (req, res) => {
     const normalizedDescription = description.trim();
     const normalizedPhone = phone.trim();
 
-    if (normalizedStoreName.length < 2 || normalizedStoreName.length > 80) {
+    if (
+      normalizedStoreName.length < 2 ||
+      normalizedStoreName.length > 80
+    ) {
       return res.status(400).json({
         success: false,
         message: "Store name must contain 2 to 80 characters",
@@ -66,7 +72,7 @@ const submitSellerApplication = async (req, res) => {
       success: true,
       message: "Seller application submitted successfully",
       application: {
-        id: application._id,
+        _id: application._id,
         storeName: application.storeName,
         description: application.description,
         status: application.status,
@@ -83,7 +89,7 @@ const submitSellerApplication = async (req, res) => {
   }
 };
 
-// Get the logged-in user's seller application
+// Get logged-in user's seller application
 const getMySellerApplication = async (req, res) => {
   try {
     const application = await SellerApplication.findOne({
@@ -100,7 +106,7 @@ const getMySellerApplication = async (req, res) => {
     return res.status(200).json({
       success: true,
       application: {
-        id: application._id,
+        _id: application._id,
         storeName: application.storeName,
         description: application.description,
         phone: application.phone,
@@ -119,7 +125,7 @@ const getMySellerApplication = async (req, res) => {
   }
 };
 
-
+// Get all seller applications (Admin)
 const getAllSellerApplications = async (req, res) => {
   try {
     const applications = await SellerApplication.find()
@@ -130,10 +136,10 @@ const getAllSellerApplications = async (req, res) => {
       success: true,
       count: applications.length,
       applications: applications.map((application) => ({
-        id: application._id,
+        _id: application._id,
         applicant: application.userId
           ? {
-              id: application.userId._id,
+              _id: application.userId._id,
               name: application.userId.name,
               email: application.userId.email,
             }
@@ -155,23 +161,24 @@ const getAllSellerApplications = async (req, res) => {
   }
 };
 
-
-
+// Approve / Reject seller application (Admin)
 
 const updateSellerApplicationStatus = async (req, res) => {
   try {
     const { status } = req.body;
     const { applicationId } = req.params;
 
-    if ( typeof status !== "string" ||
-  !["approved", "rejected"].includes(status)) {
+    if (
+      typeof status !== "string" ||
+      !["approved", "rejected"].includes(status)
+    ) {
       return res.status(400).json({
         success: false,
         message: "Status must be approved or rejected",
       });
     }
 
-    if (!/^[a-fA-F0-9]{24}$/.test(applicationId)) {
+    if (!/^[a-fA-F0-9]{24}$/.test(applicationId || "")) {
       return res.status(400).json({
         success: false,
         message: "Invalid application ID",
@@ -204,6 +211,20 @@ const updateSellerApplicationStatus = async (req, res) => {
     }
 
     if (status === "approved") {
+      // Check whether the seller already has a store
+      let store = await Store.findOne({
+        sellerId: user._id,
+      });
+
+      // Create store only if it does not exist
+      if (!store) {
+        store = await Store.create({
+          sellerId: user._id,
+          storeName: application.storeName,
+          description: application.description,
+        });
+      }
+
       user.role = "seller";
       await user.save();
     }
@@ -215,14 +236,15 @@ const updateSellerApplicationStatus = async (req, res) => {
       success: true,
       message: `Seller application ${status} successfully`,
       application: {
-        id: application._id,
+        _id: application._id,
         storeName: application.storeName,
         status: application.status,
         updatedAt: application.updatedAt,
       },
     });
+
   } catch (error) {
-    console.error("Update seller application error:", error.message);
+    console.error("Update seller application error:", error);
 
     return res.status(500).json({
       success: false,
@@ -232,11 +254,9 @@ const updateSellerApplicationStatus = async (req, res) => {
 };
 
 
-
-
 module.exports = {
   submitSellerApplication,
   getMySellerApplication,
-   getAllSellerApplications,
-   updateSellerApplicationStatus,
+  getAllSellerApplications,
+  updateSellerApplicationStatus,
 };

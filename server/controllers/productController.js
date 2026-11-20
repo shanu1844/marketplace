@@ -2,6 +2,7 @@
 const Product = require("../models/Product");
 const Store = require("../models/Store");
 
+
 const createProduct = async (req, res) => {
   try {
     const { name, description, price, stock, category } = req.body;
@@ -64,7 +65,8 @@ const createProduct = async (req, res) => {
         message: "Activate your store before adding products",
       });
     }
-
+    const imageUrl = req.file?.path || "";
+const imagePublicId = req.file?.filename || "";
     const product = await Product.create({
       storeId: store._id,
       name: name.trim(),
@@ -72,6 +74,8 @@ const createProduct = async (req, res) => {
       price: Number(price),
       stock: stock === undefined ? 0 : Number(stock),
       category: category.trim(),
+      image: imageUrl,
+imagePublicId: imagePublicId,
     });
 
     return res.status(201).json({
@@ -129,80 +133,115 @@ const getMyProducts = async (req, res) => {
   }
 };
 
+
+
 const getPublicProducts = async (req, res) => {
   try {
     const { search, category } = req.query;
 
-const filter = {
-  status: "active",
-  isDeleted: false,
-};
+    const filter = {
+      status: "active",
+      isDeleted: false,
+    };
 
-if (search) {
-  filter.name = {
-    $regex: search,
-    $options: "i",
-  };
-}
+    const page = Math.max(
+      1,
+      parseInt(req.query.page, 10) || 1
+    );
 
+    const limit = Math.min(
+      50,
+      Math.max(1, parseInt(req.query.limit, 10) || 10)
+    );
 
+    const skip = (page - 1) * limit;
 
-if (category) {
-  filter.category = category;
-}
+    // Get active stores
+    const activeStores = await Store.find({
+      status: "active",
+    }).select("_id");
 
-const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-const limit = Math.min(
-  50,
-  Math.max(1, parseInt(req.query.limit, 10) || 10)
-);
-const skip = (page - 1) * limit;
+    const activeStoreIds = activeStores.map(
+      (store) => store._id
+    );
 
-const activeStores = await Store.find({
-  status: "active",
-}).select("_id");
+    // Search with category priority
+    const normalizedSearch = search?.trim().toLowerCase();
 
-const activeStoreIds = activeStores.map(
-  (store) => store._id
-);
+    if (normalizedSearch) {
+      // Check whether search matches an active product category
+      const matchingCategory = await Product.exists({
+        status: "active",
+        isDeleted: false,
+        storeId: { $in: activeStoreIds },
+        category: normalizedSearch,
+      });
 
-const publicFilter = {
-  ...filter,
-  storeId: { $in: activeStoreIds },
-}
+      if (matchingCategory) {
+        // Exact category match
+        filter.category = normalizedSearch;
+      } else {
+        // Search product name and description
+        const searchRegex = new RegExp(
+          normalizedSearch.replace(/[.*+?^${}()|[\]\\]/g, "\\$&"),
+          "i"
+        );
 
-    const products = await Product.find(publicFilter)
-      .populate({
-        path: "storeId",
-        match: { status: "active" },
-        select: "storeName",
-      })
-      .sort({ createdAt: -1 })
-      .skip(skip)
-  .limit(limit);
+        filter.$or = [
+          { name: searchRegex },
+          { description: searchRegex },
+        ];
+      }
+    }
 
+    // Apply selected category filter
+    if (category?.trim()) {
+      filter.category = category.trim().toLowerCase();
+    }
 
+    const publicFilter = {
+      ...filter,
+      storeId: { $in: activeStoreIds },
+    };
 
+    // Fetch products and total count
+    const [products, totalProducts] = await Promise.all([
+      Product.find(publicFilter)
+        .populate({
+          path: "storeId",
+          match: { status: "active" },
+          select: "storeName",
+        })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit),
+
+      Product.countDocuments(publicFilter),
+    ]);
+
+    // Exclude products without an active populated store
     const activeProducts = products.filter(
       (product) => product.storeId !== null
     );
 
-    const totalProducts = await Product.countDocuments(publicFilter);
-const totalPages = Math.ceil(totalProducts / limit);
+    const totalPages = Math.ceil(totalProducts / limit);
 
     return res.status(200).json({
       success: true,
       count: activeProducts.length,
       pagination: {
-    totalProducts,
-    totalPages,
-    currentPage: page,
-    limit,
-  },
+        totalProducts,
+        totalPages,
+        currentPage: page,
+        limit,
+      },
       products: activeProducts,
     });
   } catch (error) {
-    console.error("Get public products error:", error.message);
+    console.error(
+      "Get public products error:",
+      error.message
+    );
 
     return res.status(500).json({
       success: false,
@@ -210,6 +249,43 @@ const totalPages = Math.ceil(totalProducts / limit);
     });
   }
 };
+
+
+
+
+const getProductCategories = async (req, res) => {
+  try {
+    const activeStores = await Store.find({
+      status: "active",
+    }).select("_id");
+
+    const activeStoreIds = activeStores.map(
+      (store) => store._id
+    );
+
+    const categories = await Product.distinct("category", {
+      status: "active",
+      isDeleted: false,
+      storeId: { $in: activeStoreIds },
+    });
+
+    return res.status(200).json({
+      success: true,
+      count: categories.length,
+      categories: categories.sort((a, b) =>
+        a.localeCompare(b)
+      ),
+    });
+  } catch (error) {
+    console.error("Get product categories error:", error.message);
+
+    return res.status(500).json({
+      success: false,
+      message: "Internal server error",
+    });
+  }
+};
+
 
 const getProductById = async (req, res) => {
   try {
@@ -464,6 +540,7 @@ const updateProductStatus = async (req, res) => {
     });
   }
 };
+
 const deleteProduct = async (req, res) => {
   try {
     const { productId } = req.params;
@@ -517,4 +594,4 @@ const deleteProduct = async (req, res) => {
 };
 
 
-module.exports = { createProduct, getMyProducts,  getPublicProducts, getProductById,updateProduct,updateProductStatus, deleteProduct, };
+module.exports = { createProduct, getMyProducts,  getPublicProducts,getProductCategories, getProductById,updateProduct,updateProductStatus, deleteProduct, };
