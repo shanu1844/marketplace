@@ -369,32 +369,23 @@ https://marketplace-l0pb.onrender.com/api/health
 
 ## Screenshots
 
-Add actual screenshots of your running application in a root-level `screenshots/` directory.
+### Home Page
+![Home](screenshots/home.png)
 
-Suggested files:
-
-```text
-screenshots/
-├── home.png
-├── products.png
-├── product-details.png
-├── cart.png
-├── buyer-orders.png
-├── seller-dashboard.png
-└── admin-dashboard.png
-```
-
-Once added, display them in this section:
-
-```markdown
-![MarketHub Home](screenshots/home.png)
-
+### Products
 ![Products](screenshots/products.png)
 
+### Product Details
+![Product Details](screenshots/product-details.png)
+
+### Cart
+![Cart](screenshots/cart.png)
+
+### Seller Dashboard
 ![Seller Dashboard](screenshots/seller-dashboard.png)
 
+### Admin Dashboard
 ![Admin Dashboard](screenshots/admin-dashboard.png)
-```
 
 ## Security
 
