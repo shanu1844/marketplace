@@ -133,6 +133,17 @@ const getMyProducts = async (req, res) => {
   }
 };
 
+// Generate a consistent shuffle value for each product and seed
+const getShuffleHash = (value) => {
+  let hash = 2166136261;
+
+  for (let i = 0; i < value.length; i++) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+
+  return hash >>> 0;
+};
 
 
 const getPublicProducts = async (req, res) => {
@@ -144,6 +155,7 @@ const getPublicProducts = async (req, res) => {
       isDeleted: false,
     };
 
+    // Pagination
     const page = Math.max(
       1,
       parseInt(req.query.page, 10) || 1
@@ -155,6 +167,11 @@ const getPublicProducts = async (req, res) => {
     );
 
     const skip = (page - 1) * limit;
+
+    // Shuffle seed
+    const shuffleSeed = String(
+      req.query.seed || "default"
+    ).slice(0, 100);
 
     // Get active stores
     const activeStores = await Store.find({
@@ -204,39 +221,52 @@ const getPublicProducts = async (req, res) => {
       storeId: { $in: activeStoreIds },
     };
 
-    // Fetch products and total count
-    const [products, totalProducts] = await Promise.all([
-      Product.find(publicFilter)
-        .populate({
-          path: "storeId",
-          match: { status: "active" },
-          select: "storeName",
-        })
-        .sort({ createdAt: -1 })
-        .skip(skip)
-        .limit(limit),
-
-      Product.countDocuments(publicFilter),
-    ]);
+    // Fetch all matching products
+    const products = await Product.find(publicFilter).populate({
+      path: "storeId",
+      match: { status: "active" },
+      select: "storeName",
+    });
 
     // Exclude products without an active populated store
     const activeProducts = products.filter(
       (product) => product.storeId !== null
     );
 
+    // Apply deterministic shuffle using the same seed
+    activeProducts.sort((a, b) => {
+      const hashA = getShuffleHash(`${shuffleSeed}-${a._id}`);
+      const hashB = getShuffleHash(`${shuffleSeed}-${b._id}`);
+
+      if (hashA === hashB) {
+        return String(a._id).localeCompare(String(b._id));
+      }
+
+      return hashA - hashB;
+    });
+
+    // Calculate count and pagination
+    const totalProducts = activeProducts.length;
     const totalPages = Math.ceil(totalProducts / limit);
+
+    // Apply pagination after shuffling
+    const paginatedProducts = activeProducts.slice(
+      skip,
+      skip + limit
+    );
 
     return res.status(200).json({
       success: true,
-      count: activeProducts.length,
+      count: paginatedProducts.length,
       pagination: {
         totalProducts,
         totalPages,
         currentPage: page,
         limit,
       },
-      products: activeProducts,
+      products: paginatedProducts,
     });
+
   } catch (error) {
     console.error(
       "Get public products error:",
@@ -249,6 +279,7 @@ const getPublicProducts = async (req, res) => {
     });
   }
 };
+
 
 
 

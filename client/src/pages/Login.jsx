@@ -184,7 +184,7 @@ function Login() {
                 Email address
               </label>
 
-              <div className="group flex min-h-13.5 items-center gap-3 rounded-xl border border-[#E5E5DC] bg-[#FBFBF8] px-4 transition-all duration-200 focus-within:border-[#174B38] focus-within:bg-white focus-within:ring-4 focus-within:ring-[#174B38]/[0.07]">
+              <div className="group flex min-h-13.5 items-center gap-3 rounded-xl border border-[#E5E5DC] bg-[#FBFBF8] px-4 transition-all duration-200 focus-within:border-[#174B38] focus-within:bg-white">
                 <Mail
                   size={18}
                   aria-hidden="true"
@@ -200,7 +200,7 @@ function Login() {
                   onChange={handleChange}
                   autoComplete="email"
                   required
-                  className="m-0 min-w-0 flex-1 border-0 bg-transparent py-3 text-sm text-[#252923] outline-none ring-0 shadow-none placeholder:text-[#A2A69D] focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none"
+                  className="m-0 min-w-0 flex-1 appearance-none border-0! bg-transparent p-0 text-sm text-[#252923] shadow-none! outline-none! ring-0! placeholder:text-[#A2A69D] focus:border-0! focus:shadow-none! focus:outline-none! focus:ring-0!"
                 />
               </div>
             </div>
@@ -216,7 +216,7 @@ function Login() {
                 </label>
               </div>
 
-              <div className="group flex min-h-13.5 items-center gap-3 rounded-xl border border-[#E5E5DC] bg-[#FBFBF8] px-4 transition-all duration-200 focus-within:border-[#174B38] focus-within:bg-white focus-within:ring-4 focus-within:ring-[#174B38]/[0.07]">
+            <div className="group flex min-h-13.5 items-center gap-3 rounded-xl border border-[#E5E5DC] bg-[#FBFBF8] px-4 transition-all duration-200 focus-within:border-[#174B38] focus-within:bg-white">
                 <LockKeyhole
                   size={18}
                   aria-hidden="true"
@@ -232,7 +232,7 @@ function Login() {
                   onChange={handleChange}
                   autoComplete="current-password"
                   required
-                  className="m-0 min-w-0 flex-1 border-0 bg-transparent py-3 text-sm text-[#252923] outline-none ring-0 shadow-none placeholder:text-[#A2A69D] focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none"
+                  className="m-0 min-w-0 flex-1 appearance-none border-0! bg-transparent p-0 text-sm text-[#252923] shadow-none! outline-none! ring-0! placeholder:text-[#A2A69D] focus:border-0! focus:shadow-none! focus:outline-none! focus:ring-0!"
                 />
 
                 <button

@@ -41,6 +41,9 @@ function Products() {
 
   const [addingProductId, setAddingProductId] = useState(null);
   const [cartFeedback, setCartFeedback] = useState(null);
+  const [shuffleSeed] = useState(
+  () => `${Date.now()}-${Math.random().toString(36).slice(2)}`
+);
 
   // Fetch public products
   useEffect(() => {
@@ -57,6 +60,7 @@ function Products() {
             limit: 12,
             search: search.trim() || undefined,
             category: category === "All" ? undefined : category,
+             seed: shuffleSeed,
           },
         });
 
@@ -99,7 +103,7 @@ function Products() {
     return () => {
       isActive = false;
     };
-  }, [page, search, category, retryCount]);
+  }, [page, search, category, retryCount  ,shuffleSeed]);
 
   // Fetch all active product categories from the database
   useEffect(() => {
@@ -598,7 +602,7 @@ function Products() {
                 value={search}
                 onChange={handleSearch}
                 placeholder="Search products..."
-                className="h-full min-w-0 flex-1 border-0 bg-transparent text-xs text-[#252923] outline-none placeholder:text-[#999D95] focus:border-0 focus:outline-none focus:ring-0"
+                className="h-full min-w-0 flex-1 appearance-none border-0! bg-transparent p-0 text-xs text-[#252923] shadow-none! outline-none! ring-0! placeholder:text-[#999D95] focus:border-0! focus:shadow-none! focus:outline-none! focus:ring-0!"
               />
 
               {search && (

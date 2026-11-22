@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import {
   RefreshCw,
@@ -111,7 +110,7 @@ function AdminDashboard() {
 
           setError(
             err.response?.data?.message ||
-              "Failed to load dashboard statistics."
+              "Failed to load dashboard statistics.",
           );
         }
       } finally {
@@ -142,12 +141,12 @@ function AdminDashboard() {
 
   return (
     <div className="min-h-screen bg-[#F7F5EF]">
-      <div className="mx-auto flex max-w-[1600px] gap-5 px-3 py-5 sm:px-5 lg:gap-7 lg:px-8 lg:py-8">
+      <div className="mx-auto flex max-w-[1600px] flex-col gap-5 px-3 py-5 sm:px-5 md:flex-row lg:gap-7 lg:px-8 lg:py-8">
         {/* Sidebar */}
         <AdminSidebar />
 
         {/* Main Content */}
-        <main className="min-w-0 flex-1">
+        <main className="w-full min-w-0 flex-1">
           {/* Header */}
           <header className="mb-7 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
             <div>
@@ -171,10 +170,7 @@ function AdminDashboard() {
               disabled={loading}
               className="inline-flex w-fit items-center justify-center gap-2 rounded-xl bg-[#174B38] px-5 py-3 text-sm font-semibold text-white! shadow-lg shadow-[#174B38]/10 transition hover:bg-[#103729] disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <RefreshCw
-                size={16}
-                className={loading ? "animate-spin" : ""}
-              />
+              <RefreshCw size={16} className={loading ? "animate-spin" : ""} />
               Refresh data
             </button>
           </header>
@@ -200,8 +196,8 @@ function AdminDashboard() {
                 </h2>
 
                 <p className="mt-3 max-w-lg text-sm leading-6 text-white/65">
-                  Manage your marketplace ecosystem, monitor activity and
-                  stay on top of pending operations from one place.
+                  Manage your marketplace ecosystem, monitor activity and stay
+                  on top of pending operations from one place.
                 </p>
               </div>
 
@@ -293,7 +289,7 @@ function AdminDashboard() {
                         {loading
                           ? "..."
                           : Number(stats[stat.key] || 0).toLocaleString(
-                              "en-IN"
+                              "en-IN",
                             )}
                       </h3>
 
@@ -361,7 +357,7 @@ function AdminDashboard() {
                           {loading
                             ? "..."
                             : Number(stats[stat.key] || 0).toLocaleString(
-                                "en-IN"
+                                "en-IN",
                               )}
                         </p>
                       </div>

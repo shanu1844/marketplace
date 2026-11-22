@@ -102,8 +102,8 @@ function Register() {
     }
   };
 
-  const inputClasses =
-    "w-full min-w-0 border-0 bg-transparent py-3 text-sm text-[#252923] outline-none ring-0 shadow-none placeholder:text-[#a0a399] focus:border-0 focus:outline-none focus:ring-0 focus:shadow-none focus-visible:outline-none focus-visible:ring-0";
+const inputClasses =
+  "m-0 min-w-0 flex-1 appearance-none border-0! bg-transparent p-0 text-sm text-[#252923] shadow-none! outline-none! ring-0! placeholder:text-[#a0a399] focus:border-0! focus:shadow-none! focus:outline-none! focus:ring-0! focus-visible:outline-none! focus-visible:ring-0!";
 
   return (
     <main className="min-h-[calc(100vh-5rem)] bg-[#f5f4ee] px-4 py-7 sm:px-6 lg:px-10 lg:py-12">
@@ -249,7 +249,7 @@ function Register() {
                 Full name
               </label>
 
-              <div className="group flex min-h-14 items-center gap-3 rounded-xl border border-[#e5e5dc] bg-[#fcfcf9] px-4 transition-all focus-within:border-[#174b38] focus-within:bg-white focus-within:ring-4 focus-within:ring-[#174b38]/5">
+              <div className="group flex min-h-14 items-center gap-3 rounded-xl border border-[#e5e5dc] bg-[#fcfcf9] px-4 transition-all focus-within:border-[#174b38] focus-within:bg-white ">
                 <UserRound
                   size={19}
                   className="shrink-0 text-[#92978e] transition group-focus-within:text-[#174b38]"
@@ -281,7 +281,7 @@ function Register() {
                 Email address
               </label>
 
-              <div className="group flex min-h-14 items-center gap-3 rounded-xl border border-[#e5e5dc] bg-[#fcfcf9] px-4 transition-all focus-within:border-[#174b38] focus-within:bg-white focus-within:ring-4 focus-within:ring-[#174b38]/5">
+              <div className="group flex min-h-14 items-center gap-3 rounded-xl border border-[#e5e5dc] bg-[#fcfcf9] px-4 transition-all focus-within:border-[#174b38] focus-within:bg-white ">
                 <Mail
                   size={19}
                   className="shrink-0 text-[#92978e] transition group-focus-within:text-[#174b38]"
@@ -311,7 +311,7 @@ function Register() {
                 Create password
               </label>
 
-              <div className="group flex min-h-14 items-center gap-3 rounded-xl border border-[#e5e5dc] bg-[#fcfcf9] px-4 transition-all focus-within:border-[#174b38] focus-within:bg-white focus-within:ring-4 focus-within:ring-[#174b38]/5">
+              <div className="group flex min-h-14 items-center gap-3 rounded-xl border border-[#e5e5dc] bg-[#fcfcf9] px-4 transition-all focus-within:border-[#174b38] focus-within:bg-white ">
                 <LockKeyhole
                   size={19}
                   className="shrink-0 text-[#92978e] transition group-focus-within:text-[#174b38]"
